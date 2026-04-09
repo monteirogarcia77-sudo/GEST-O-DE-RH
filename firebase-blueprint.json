@@ -1,0 +1,138 @@
+{
+  "entities": {
+    "Employee": {
+      "title": "Employee",
+      "description": "Represents an employee in the Angolan HR system.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Full name of the employee" },
+        "bi": { "type": "string", "description": "Bilhete de Identidade number" },
+        "nif": { "type": "string", "description": "Número de Identificação Fiscal" },
+        "inss": { "type": "string", "description": "Número de Segurança Social" },
+        "role": { "type": "string", "description": "Job position" },
+        "department": { "type": "string", "description": "Department name" },
+        "baseSalary": { "type": "number", "description": "Base salary in Kwanza (Kz)" },
+        "admissionDate": { "type": "string", "format": "date", "description": "Date of admission" },
+        "contractType": { "type": "string", "enum": ["Efetivo", "Temporário"], "description": "Type of employment contract" },
+        "status": { "type": "string", "enum": ["Active", "Inactive"], "description": "Current status of the employee" }
+      },
+      "required": ["name", "bi", "nif", "inss", "role", "baseSalary", "admissionDate", "contractType"]
+    },
+    "Attendance": {
+      "title": "Attendance",
+      "description": "Records daily attendance and overtime for an employee.",
+      "type": "object",
+      "properties": {
+        "employeeId": { "type": "string", "description": "Reference to the employee" },
+        "date": { "type": "string", "format": "date", "description": "Date of attendance" },
+        "status": { "type": "string", "enum": ["Present", "Absent_J", "Absent_U", "Late", "Vacation"], "description": "Attendance status" },
+        "overtimeHours": { "type": "number", "description": "Number of overtime hours worked" },
+        "notes": { "type": "string", "description": "Optional notes" }
+      },
+      "required": ["employeeId", "date", "status"]
+    },
+    "Performance": {
+      "title": "Performance",
+      "description": "Employee performance evaluations.",
+      "type": "object",
+      "properties": {
+        "employeeId": { "type": "string" },
+        "date": { "type": "string", "format": "date" },
+        "score": { "type": "number" },
+        "productivity": { "type": "string" },
+        "feedback": { "type": "string" }
+      },
+      "required": ["employeeId", "date", "score"]
+    },
+    "Career": {
+      "title": "Career",
+      "description": "History of promotions and changes.",
+      "type": "object",
+      "properties": {
+        "employeeId": { "type": "string" },
+        "date": { "type": "string", "format": "date" },
+        "type": { "type": "string" },
+        "description": { "type": "string" },
+        "previousValue": { "type": "string" },
+        "newValue": { "type": "string" }
+      },
+      "required": ["employeeId", "date", "type"]
+    },
+    "Payroll": {
+      "title": "Payroll",
+      "description": "Monthly payroll record for an employee.",
+      "type": "object",
+      "properties": {
+        "employeeId": { "type": "string", "description": "Reference to the employee" },
+        "month": { "type": "number", "description": "Month of the payroll (1-12)" },
+        "year": { "type": "number", "description": "Year of the payroll" },
+        "baseSalary": { "type": "number", "description": "Base salary at the time" },
+        "inssWorker": { "type": "number", "description": "INSS discount (3%)" },
+        "inssCompany": { "type": "number", "description": "INSS company contribution (8%)" },
+        "irt": { "type": "number", "description": "IRT discount (progressive)" },
+        "netSalary": { "type": "number", "description": "Final net salary" },
+        "status": { "type": "string", "enum": ["Draft", "Paid"], "description": "Payment status" }
+      },
+      "required": ["employeeId", "month", "year", "baseSalary", "inssWorker", "irt", "netSalary"]
+    },
+    "Vacation": {
+      "title": "Vacation",
+      "description": "Records vacation periods for an employee.",
+      "type": "object",
+      "properties": {
+        "employeeId": { "type": "string", "description": "Reference to the employee" },
+        "startDate": { "type": "string", "format": "date", "description": "Start date of vacation" },
+        "endDate": { "type": "string", "format": "date", "description": "End date of vacation" },
+        "days": { "type": "number", "description": "Number of working days" },
+        "status": { "type": "string", "enum": ["Planned", "Approved", "Completed", "Cancelled"], "description": "Status of the vacation" },
+        "year": { "type": "number", "description": "Reference year for the vacation" }
+      },
+      "required": ["employeeId", "startDate", "endDate", "days", "status", "year"]
+    },
+    "Expense": {
+      "title": "Expense",
+      "description": "Records company expenses for accounting.",
+      "type": "object",
+      "properties": {
+        "description": { "type": "string", "description": "What was the expense (How/What)" },
+        "category": { "type": "string", "description": "Category of expense" },
+        "date": { "type": "string", "format": "date", "description": "When the expense occurred" },
+        "location": { "type": "string", "description": "Where the expense occurred" },
+        "amount": { "type": "number", "description": "How much was spent" },
+        "paymentMethod": { "type": "string", "description": "How it was paid" },
+        "status": { "type": "string", "enum": ["Pending", "Paid", "Cancelled"], "description": "Current status" }
+      },
+      "required": ["description", "category", "date", "amount", "status"]
+    }
+  },
+  "firestore": {
+    "/employees/{employeeId}": {
+      "schema": "Employee",
+      "description": "Collection of employee profiles."
+    },
+    "/attendance/{attendanceId}": {
+      "schema": "Attendance",
+      "description": "Collection of attendance records."
+    },
+    "/payrolls/{payrollId}": {
+      "schema": "Payroll",
+      "description": "Collection of payroll records."
+    },
+    "/vacations/{vacationId}": {
+      "schema": "Vacation",
+      "description": "Collection of vacation records."
+    },
+    "/expenses/{expenseId}": {
+      "schema": "Expense",
+      "description": "Collection of company expenses."
+    },
+    "/performance/{id}": {
+      "schema": "Performance",
+      "description": "Employee performance records."
+    },
+    "/career/{id}": {
+      "schema": "Career",
+      "description": "Employee career history."
+    }
+  }
+}
